@@ -1,21 +1,20 @@
-locals {
-  callback_uri         = "http://localhost:8000/callback"
-  logout_url           = "http://localhost:8000/chat"
-  client_name          = "Travel-Agent"
-  app_type             = "regular_web"
-  grant_types          = ["authorization_code", "refresh_token", "client_credentials"]
-  jwt_alg              = "RS256"
-  connection_name      = "Travel-Agent"
-  user_password        = "Passw0rd@"
-  resource_server_name = "Travel-Agent"
-  resource_server_identifier = "https://travel-agent.example.com"
-}
-resource "random_string" "client_secret" {
-  length  = 48
-  upper   = true
-  lower   = true
-  numeric = true
+resource "random_password" "client_secret" {
+  length  = 60
   special = false
+}
+
+locals {
+  callback_uri               = "http://localhost:8000/callback"
+  logout_url                 = "http://localhost:8000/chat"
+  client_name                = "Travel-Agent"
+  client_secret              = random_password.client_secret.result
+  app_type                   = "regular_web"
+  grant_types                = ["authorization_code", "refresh_token", "client_credentials"]
+  jwt_alg                    = "RS256"
+  connection_name            = "Travel-Agent"
+  user_password              = "Passw0rd@"
+  resource_server_name       = "Travel-Agent"
+  resource_server_identifier = "https://travel-agent.example.com"
 }
 
 resource "auth0_client" "agent" {
@@ -33,7 +32,7 @@ resource "auth0_client" "agent" {
 
 resource "auth0_client_credentials" "agent" {
   client_id     = auth0_client.agent.id
-  client_secret = random_string.client_secret.result
+  client_secret = local.client_secret
 }
 
 resource "auth0_connection" "agent" {
@@ -84,11 +83,11 @@ output "client_id" {
 }
 
 output "client_secret" {
-  value = random_string.client_secret.result
+  value = local.client_secret
 }
 
 output "connection_name" {
-    value = local.connection_name
+  value = local.connection_name
 }
 
 output "resource_server_identifier" {
