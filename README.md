@@ -96,6 +96,7 @@ Always make sure to carefully review required IAM permissions!
 Terraform: 
 ```
 # Make sure you're in the {project_root}/terraform directory
+chmod +x prep-web.sh
 ./prep-web.sh
 cd ..
 ```
